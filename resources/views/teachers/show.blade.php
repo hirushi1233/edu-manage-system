@@ -39,6 +39,28 @@
                 </div>
             </div>
 
+             <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>NIC Front</strong>
+                    @if($teacher->nic_front_image)
+                        <p><img src ="{{ asset($teacher->nic_front_image) }}" alt="NIC Front" class="img-thumbnail" width="200"></p>
+                    @else
+                        <p>N/A</p>
+                    @endif
+
+                </div>
+
+                <div class="col-md-6">
+                    <strong>NIC Back</strong>
+                    @if($teacher->nic_back_image)
+                        <p><img src ="{{ asset($teacher->nic_back_image) }}" alt="NIC Front" class="img-thumbnail" width="200"></p>
+                    @else
+                        <p>N/A</p>
+                    @endif
+                </div>
+            </div>
+
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <strong>Phone 1:</strong>
@@ -83,6 +105,8 @@
                     <p>{{ $teacher->grade_2 ?? 'N/A' }}</p>
                 </div>
             </div>
+            
+
         </div>
     </div>
 </div>

@@ -21,7 +21,7 @@ class Teacher extends Model
         'grade_1',
         'grade_2',
         'nic_front_image',
-        'nic_back_image'
+        'nic_back_image',
     ];
 
     // Relationship for Subject 1

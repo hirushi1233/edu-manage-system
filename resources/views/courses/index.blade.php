@@ -9,6 +9,10 @@
         <a href="{{ route('courses.create') }}" class="btn btn-secondary">
             <i class="fas fa-plus"></i> Add Course
         </a>
+        <!-- Export as Text button -->
+            <a href="{{ route('courses.export.text') }}" class="btn btn-success">
+                <i class="fas fa-download"></i> Export as Text
+            </a>
     </div>
 
     <div class="card">
@@ -41,15 +45,12 @@
                             <td><span class="badge bg-primary">{{ $course->field }}</span></td>
                             <td><span class="badge bg-info">{{ $course->subjects->count() }} subjects</span></td>
                             <td>
-                                <a href="{{ route('courses.edit', $course) }}" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                <a href="{{ route('courses.edit', $course) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                                <a href="{{ route('courses.show', $course) }}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
                                 <form action="{{ route('courses.destroy', $course) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

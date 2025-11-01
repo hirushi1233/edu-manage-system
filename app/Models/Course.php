@@ -16,9 +16,13 @@ class Course extends Model
         'field',
     ];
 
-    // Relationship: One course has many subjects
     public function subjects()
     {
-        return $this->hasMany(Subject::class);
+        return $this->belongsToMany(
+            Subject::class,
+            'course_subject',
+            'course_id',
+            'subject_id'
+        );
     }
 }

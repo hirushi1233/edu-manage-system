@@ -43,7 +43,7 @@
                         @php
                             $selectedSubjects = old('subjects', $course->subjects->pluck('id')->toArray());
                         @endphp
-                        
+
                         @forelse($subjects as $subject)
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="subjects[]" value="{{ $subject->id }}" 
@@ -51,9 +51,12 @@
                                     {{ in_array($subject->id, $selectedSubjects) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="subject{{ $subject->id }}">
                                     <strong>{{ $subject->subject_code }}</strong> - {{ $subject->subject_name }}
-                                    @if($subject->course && $subject->course->id != $course->id)
-                                        <span class="badge bg-warning text-dark">Currently in: {{ $subject->course->course_name }}</span>
-                                    @endif
+                                   @if($subject->courses->count())
+    <span class="badge bg-warning text-dark">In Courses: 
+        {{ $subject->courses->pluck('course_name')->join(', ') }}
+    </span>
+@endif
+
                                 </label>
                             </div>
                         @empty

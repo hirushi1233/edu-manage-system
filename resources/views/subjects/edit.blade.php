@@ -11,7 +11,7 @@
             <form method="POST" action="{{ route('subjects.update', $subject) }}">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="mb-3">
                     <label class="form-label">Subject Code *</label>
                     <input type="text" name="subject_code" class="form-control @error('subject_code') is-invalid @enderror" value="{{ old('subject_code', $subject->subject_code) }}" required>
@@ -28,20 +28,6 @@
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Course *</label>
-                    <select name="course_id" class="form-control @error('course_id') is-invalid @enderror" required>
-                        <option value="">Select Course</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}" {{ old('course_id', $subject->course_id) == $course->id ? 'selected' : '' }}>
-                                {{ $course->course_name }} ({{ $course->course_code }})
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('course_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
 
                 <button type="submit" class="btn btn-warning">Update Subject</button>
                 <a href="{{ route('subjects.index') }}" class="btn btn-secondary">Cancel</a>

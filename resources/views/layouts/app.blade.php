@@ -313,7 +313,7 @@
                 <i class="fas fa-graduation-cap"></i>
                 <span>Student Management System</span>
             </a>
-          <<div class="user-section">
+          <div class="user-section">
     <span><i class="fas fa-user-circle me-1"></i> {{ Auth::user()->name }}</span>
     
     <!-- Profile Button -->

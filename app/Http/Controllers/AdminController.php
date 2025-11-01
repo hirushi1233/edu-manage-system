@@ -27,17 +27,16 @@ public function login(Request $request)
         'password' => 'required',
     ]);
 
-    // Get the user manually
-    $user = User::where('email', $request->email)->first();
+    $credentials = $request->only('email', 'password');
 
-    if ($user && Hash::check($request->password, $user->password)) {
-        Auth::login($user);
-        return redirect()->route('admin.dashboard');
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     return back()->withErrors([
         'email' => 'The provided credentials do not match our records.',
-    ]);
+    ])->withInput($request->only('email'));
 }
     // Dashboard
     public function dashboard()

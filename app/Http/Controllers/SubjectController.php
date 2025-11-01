@@ -3,20 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
-use App\Models\Course;
 use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
-    // Display all subjects with optional search
+    // Display all subjects
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $subjects = Subject::with('course')
-            ->when($search, function($query) use ($search) {
-                return $query->where('subject_name', 'like', "%{$search}%")
-                             ->orWhere('subject_code', 'like', "%{$search}%");
-            })->paginate(10);
+        $subjects = Subject::when($search, function($query) use ($search) {
+            return $query->where('subject_name', 'like', "%{$search}%")
+                         ->orWhere('subject_code', 'like', "%{$search}%");
+        })->paginate(10);
 
         return view('subjects.index', compact('subjects'));
     }
@@ -24,8 +22,7 @@ class SubjectController extends Controller
     // Show create form
     public function create()
     {
-        $courses = Course::all();
-        return view('subjects.create', compact('courses'));
+        return view('subjects.create');
     }
 
     // Store new subject
@@ -34,21 +31,19 @@ class SubjectController extends Controller
         $request->validate([
             'subject_code' => 'required|unique:subjects,subject_code',
             'subject_name' => 'required|string|max:255',
-            'course_id' => 'required|exists:courses,id'
         ]);
 
-        Subject::create($request->all());
+        Subject::create($request->only(['subject_code', 'subject_name']));
 
         return redirect()->route('subjects.index')
                          ->with('success', 'Subject created successfully!');
     }
 
-    // Show edit form
+    // Edit form
     public function edit($id)
     {
         $subject = Subject::findOrFail($id);
-        $courses = Course::all();
-        return view('subjects.edit', compact('subject', 'courses'));
+        return view('subjects.edit', compact('subject'));
     }
 
     // Update subject
@@ -59,16 +54,15 @@ class SubjectController extends Controller
         $request->validate([
             'subject_code' => 'required|unique:subjects,subject_code,' . $subject->id,
             'subject_name' => 'required|string|max:255',
-            'course_id' => 'required|exists:courses,id'
         ]);
 
-        $subject->update($request->all());
+        $subject->update($request->only(['subject_code', 'subject_name']));
 
         return redirect()->route('subjects.index')
                          ->with('success', 'Subject updated successfully!');
     }
 
-    // Delete subject
+    // Delete
     public function destroy($id)
     {
         $subject = Subject::findOrFail($id);
@@ -78,10 +72,10 @@ class SubjectController extends Controller
                          ->with('success', 'Subject deleted successfully!');
     }
 
-    // Show a single subject (optional)
+    // Show single subject
     public function show($id)
     {
-        $subject = Subject::with('course')->findOrFail($id);
+        $subject = Subject::findOrFail($id);
         return view('subjects.show', compact('subject'));
     }
 }

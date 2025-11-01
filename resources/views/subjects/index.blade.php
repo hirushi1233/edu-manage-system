@@ -26,7 +26,6 @@
                         <tr>
                             <th>Subject Code</th>
                             <th>Subject Name</th>
-                            <th>Course</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -35,9 +34,6 @@
                         <tr>
                             <td>{{ $subject->subject_code }}</td>
                             <td>{{ $subject->subject_name }}</td>
-                            <td>
-                                <span class="badge bg-info">{{ $subject->course->course_name ?? 'N/A' }}</span>
-                            </td>
                             <td>
                                 <a href="{{ route('subjects.edit', $subject) }}" class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i>

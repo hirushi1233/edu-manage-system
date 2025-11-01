@@ -8,11 +8,10 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    // Show all courses
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $courses = Course::when($search, function ($query) use ($search) {
+        $courses = Course::with('subjects')->when($search, function ($query) use ($search) {
             return $query->where('course_name', 'like', "%{$search}%")
                          ->orWhere('course_code', 'like', "%{$search}%")
                          ->orWhere('course_id', 'like', "%{$search}%");
@@ -21,14 +20,12 @@ class CourseController extends Controller
         return view('courses.index', compact('courses'));
     }
 
-    // Show create form
     public function create()
     {
         $subjects = Subject::all();
         return view('courses.create', compact('subjects'));
     }
 
-    // Store new course
     public function store(Request $request)
     {
         $request->validate([
@@ -40,21 +37,15 @@ class CourseController extends Controller
             'subjects.*' => 'exists:subjects,id'
         ]);
 
-        $course = Course::create([
-            'course_id' => $request->course_id,
-            'course_name' => $request->course_name,
-            'course_code' => $request->course_code,
-            'field' => $request->field,
-        ]);
+        $course = Course::create($request->only('course_id', 'course_name', 'course_code', 'field'));
 
-        if ($request->has('subjects')) {
-            Subject::whereIn('id', $request->subjects)->update(['course_id' => $course->id]);
+        if ($request->subjects) {
+            $course->subjects()->sync($request->subjects);
         }
 
         return redirect()->route('courses.index')->with('success', 'Course created successfully!');
     }
 
-    // Edit form
     public function edit($id)
     {
         $course = Course::findOrFail($id);
@@ -62,7 +53,6 @@ class CourseController extends Controller
         return view('courses.edit', compact('course', 'subjects'));
     }
 
-    // Update course
     public function update(Request $request, $id)
     {
         $course = Course::findOrFail($id);
@@ -76,27 +66,55 @@ class CourseController extends Controller
             'subjects.*' => 'exists:subjects,id'
         ]);
 
-        $course->update([
-            'course_id' => $request->course_id,
-            'course_name' => $request->course_name,
-            'course_code' => $request->course_code,
-            'field' => $request->field,
-        ]);
+        $course->update($request->only('course_id', 'course_name', 'course_code', 'field'));
 
-        Subject::where('course_id', $course->id)->update(['course_id' => null]);
-        if ($request->has('subjects')) {
-            Subject::whereIn('id', $request->subjects)->update(['course_id' => $course->id]);
-        }
+        $course->subjects()->sync($request->subjects ?? []);
 
         return redirect()->route('courses.index')->with('success', 'Course updated successfully!');
     }
 
-    // Delete course
     public function destroy($id)
     {
         $course = Course::findOrFail($id);
+        $course->subjects()->detach();
         $course->delete();
 
         return redirect()->route('courses.index')->with('success', 'Course deleted successfully!');
     }
+
+    public function show(Course $course)
+    {
+        return view('courses.show', compact('course'));
+    }
+    public function exportText()
+{
+    $courses = \App\Models\Course::with('subjects')->get();
+
+    $text = "COURSE LIST\n";
+    $text .= "=========================\n\n";
+
+    foreach ($courses as $course) {
+        $text .= "Course ID: {$course->course_id}\n";
+        $text .= "Course Name: {$course->course_name}\n";
+        $text .= "Course Code: {$course->course_code}\n";
+        $text .= "Field: {$course->field}\n";
+
+        if ($course->subjects->count() > 0) {
+            $text .= "Subjects:\n";
+            foreach ($course->subjects as $subject) {
+                $text .= " - {$subject->subject_name} ({$subject->subject_code})\n";
+            }
+        } else {
+            $text .= "Subjects: None\n";
+        }
+
+        $text .= "-------------------------\n";
+    }
+
+    $fileName = "courses_" . date('Y-m-d_H-i-s') . ".txt";
+    return response($text)
+        ->header('Content-Type', 'text/plain')
+        ->header('Content-Disposition', "attachment; filename={$fileName}");
+}
+
 }

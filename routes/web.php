@@ -26,12 +26,16 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
     Route::get('/profile', [AdminController::class, 'showProfileEdit'])->name('admin.profile');
     Route::post('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
-    
+
+    Route::get('/courses/search-subjects', [CourseController::class, 'searchSubjects'])->name('courses.search-subjects');
+    Route::get('/courses/export/text', [CourseController::class, 'exportText'])->name('courses.export.text');
+    Route::get('/teachers/export', [App\Http\Controllers\TeacherController::class, 'export'])->name('teachers.export');
+
 
     Route::resource('teachers', TeacherController::class);
     Route::resource('students', StudentController::class);
     Route::resource('subjects', SubjectController::class);
     Route::resource('classes', ClassController::class);
     Route::resource('courses', CourseController::class);
-    Route::resource('grades', GradeController::class); 
+    Route::resource('grades', GradeController::class);
 });
